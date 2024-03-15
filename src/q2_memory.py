@@ -30,8 +30,6 @@ from typing import List, Tuple
 from collections import Counter
 from src.utils.extract_emojis import extract_emojis
 
-file = 'farmers-protest-tweets-2021-2-4.json'
-
 
 def q2_memory(file_path: str) -> List[Tuple[str, int]]:
     """
@@ -55,12 +53,16 @@ def q2_memory(file_path: str) -> List[Tuple[str, int]]:
         """
 
     emoji_counter = Counter()
-
-    with open(file_path, 'r') as f:
-        for line in f:
-            tweet = ujson.loads(line)
-            emojis = extract_emojis(tweet['content'])
-            emoji_counter.update(emojis)
-
+    try:
+        with open(file_path, 'r') as f:
+            for line in f:
+                tweet = ujson.loads(line)
+                emojis = extract_emojis(tweet['content'])
+                emoji_counter.update(emojis)
+    except FileNotFoundError:
+        raise FileNotFoundError("No se pudo encontrar el archivo: {}".format(file_path))
+    # Se captura cualquier otra excepción que ocurra al abrir el archivo.
+    except:
+        raise Exception("Error al abrir el archivo: {}".format(file_path))
     top_10_emojis = emoji_counter.most_common(10)
     return top_10_emojis
